@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<html ng-app="" xmlns:style="http://www.w3.org/1999/xhtml">
+
+<head>
+    <script type='text/javascript' src='//cdnjs.cloudflare.com/ajax/libs/angular.js/1.2.1/angular.js'></script>
+    <script src="store.js"></script><   <meta charset="UTF-8">
+
+</head>
+
+<title> ng-controller="Hello">{{message}}</title>
+<body>
+<div ng-controller="Products">
+    <ul>
+        <li ng-repeat="item in items" style:list-style-type:none >
+            <img src="images/{{item.name}}.jpg" />
+            NAME: {{ item.name }} PRICE: {{ item.price }} RATING: {{item.rating}}
+        </li>
+    </ul>
+</div>
+
+</body>
+</html>

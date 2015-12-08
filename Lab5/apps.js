@@ -3,12 +3,16 @@ var express = require('express');
 var bodyParser = require('body-parser');
 //DB Products
 var dbProducts = require('./dbProducts.js');
+var dbRatings = require('./dbRatings.js');
+//Allow for xss
+var cors = require('cors');
 
 var app = express();
 
 // configure body parser
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json());
+app.use(cors());
 
 var port = process.env.PORT || 8080; // set our port
 
@@ -47,8 +51,9 @@ router.route('/products')
     })
     //PUT localhost:8080/api/products)
     //x-www-form-url-encoded
+    //Updated by Ben 10/26/15 - put = update (not insert)
     .put(function (req, res) {
-        dbProducts.insertProduct(req.body, function (err, data) {
+        dbProducts.updateProduct(req.body, function (err, data) {
             if (data) {
                 res.json({
                     status: '200'
@@ -61,8 +66,9 @@ router.route('/products')
     })
     //POST localhost:8080/api/products
     //x-www-form-url-encoded
+    //Updated by Ben 10/26/15 - post = insert (not update)
     .post(function (req, res) {
-        dbProducts.updateProduct(req.body, function (err, data) {
+        dbProducts.insertProduct(req.body, function (err, data) {
             if (data) {
                 res.json({
                     status: '200'
@@ -104,9 +110,27 @@ router.route('/products/:product_id')
             }
         });
     })
-    //POST localhost:8080/api/products
-    .post(function (req, res) {
-        dbProducts.updateProduct(req.body, function (err, data) {
+//POST localhost:8080/api/products
+/*
+ //Ben 10/26/15 - already implemented above
+ .post(function (req, res) {
+ dbProducts.updateProduct(req.body, function (err, data) {
+ if (data) {
+ res.json({
+ status: '200'
+ });
+ }
+ else {
+ res.json(404, {status: err});
+ }
+ });
+ });
+ */
+
+router.route('/ratings')
+    .delete(function (req, res) {
+        dbRatings.deleteRating(req.body, function (err, data)
+        {
             if (data) {
                 res.json({
                     status: '200'
@@ -116,8 +140,53 @@ router.route('/products/:product_id')
                 res.json(404, {status: err});
             }
         });
-    });
+    })
 
+    .post(function (req, res) {
+        dbRatings.insertRating(req.body, function (err, data)
+        {
+            if (data) {
+                res.json({
+                    status: '200'
+                });
+            }
+            else {
+                res.json(404, {status: err});
+            }
+        });
+    })
+
+    .put(function (req, res){
+        dbRatings.updateRating(req.body, function (err, data)
+        {
+            if (data) {
+                res.json({
+                    status: '200'
+                });
+            }
+            else {
+                res.json(404, {status: err});
+            }
+        });
+    })
+
+
+router.route('/ratings/:product_id')
+    .get(function (req, res) {
+        dbRatings.getRating(req.params['product_id'], function (err, data)
+        {
+            if (data) {
+                res.json({
+                    status: '200',
+                    item: data
+                });
+            }
+            else
+            {
+                res.json(404, {status: err});
+            }
+        });
+    });
 
 // Register routes
 app.use('/api', router);
